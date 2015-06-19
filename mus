@@ -1,0 +1,63 @@
+#! /usr/bin/env node
+
+var exec = require('child_process').exec
+var path = require('path')
+
+var userArgs = process.argv.slice(2)
+var config = require('./musica.json')
+
+console.log('MUS', userArgs, config)
+
+var readline = require('readline')
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
+search(userArgs[0], config)
+
+function search (searchPattern, config) {
+  var folders = {}
+
+  var index = path.join(__dirname, config.index)
+
+  var cmd = 'cat ' + index + ' | grep -i ' + searchPattern + ' | grep mp3'
+  exec(cmd, function (err, stdout, stderr) {
+    if (err) console.error(err)
+    stdout.split('\n').forEach(function (file) {
+      if (/^\s*$/.test(file)) return
+      var lastBar = file.lastIndexOf('/')
+      var folder = file.slice(0, lastBar)
+      var mp3 = file.substring(lastBar + 1)
+      folders[folder] = folders[folder] || []
+      folders[folder].push(mp3)
+    })
+
+    var keys = Object.keys(folders)
+    keys.forEach(function (path, index) {
+      console.log((index + 1) + ' | ' + titleOf(path))
+    })
+
+    readCommand(keys, folders, config)
+  })
+}
+
+function titleOf (path) {
+  return path.substring(path.lastIndexOf('/') + 1)
+}
+
+function readCommand (keys, folders, config) {
+  rl.question('So? ', function (answer) {
+    if (answer == +answer) {
+      var key = keys[+answer - 1]
+      console.log('OPEN ' + titleOf(key))
+      var folder = path.join(config.root, key).replace(/ /g, '\\ ')
+      exec('open ' + folder, function () {
+        console.log('bye!')
+      })
+    } else {
+      console.log('Thank you for your valuable feedback:', answer)
+    }
+    rl.close()
+  })
+}
