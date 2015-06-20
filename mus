@@ -1,109 +1,13 @@
 #! /usr/bin/env node
-var exec = require('child_process').exec
-var path = require('path')
 var readline = require('readline')
-
-function Archiver (config) {
-  this.config = config
-  this.results = new Results()
-  this.rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  })
-  console.log('MUS', this.config)
-}
-
-Archiver.prototype.exit = function (args) {
-  this.rl.close()
-}
-Archiver.prototype.search = function (searchPattern) {
-  if (/^\s*$/.test(searchPattern)) throw Error('No search term!')
-  console.log('SEARCH: ' + searchPattern)
-
-  var index = path.join(__dirname, this.config.index)
-  var cmd = 'cat ' + index + ' | grep -i ' + searchPattern + ' | grep mp3'
-  var self = this
-  exec(cmd, function (err, stdout, stderr) {
-    if (err) throw err
-    stdout.split('\n').forEach(function (file) {
-      self.results.addFile(file)
-    })
-    self.list()
-    self.prompt()
-  })
-}
-Archiver.prototype.list = function (args) {
-  var folder
-  var self = this
-  this.results.keys.forEach(function (path, index) {
-    folder = self.results.getFolder(path)
-    console.log(index + 1 + ' | ' + folder.title)
-  })
-  return true
-}
-Archiver.prototype.open = function (args) {
-  console.log('OPEN', args)
-  var folder = this.results.getFolderByNum(args[0])
-  var fullPath = path.join(this.config.root, folder.path).replace(/ /g, '\\ ')
-  exec('open ' + fullPath, function () {
-    console.log('bye!')
-  })
-}
-Archiver.prototype.prompt = function (args) {
-  if (args) console.log('mmm...', args)
-
-  var self = this
-  this.rl.question('So? ', function (answer) {
-    var cmd
-    var args = answer.split(/\s+/)
-    if (args.length === 0) {
-      cmd = self.prompt
-    } else if (args[0] == +args[0]) {
-      cmd = self.open
-    } else {
-      var name = args.shift()
-      cmd = self[name] || self.prompt
-    }
-
-    if (cmd.call(self, args)) {
-      self.prompt()
-    } else {
-      self.exit()
-    }
-  })
-  return false
-}
-
-function Results () {
-  this.clear()
-}
-Results.prototype.clear = function () {
-  this.folders = {}
-  this.keys = []
-}
-Results.prototype.getFolder = function (path) {
-  var folder = this.folders[path]
-  if (!folder) {
-    folder = { path: path, files: [] }
-    folder.title = path.substring(path.lastIndexOf('/') + 1)
-    this.folders[path] = folder
-    this.keys.push(path)
-  }
-  return folder
-}
-Results.prototype.addFile = function (file) {
-  if (/^\s*$/.test(file)) return
-  var lastBar = file.lastIndexOf('/')
-  var path = file.slice(0, lastBar)
-  var folder = this.getFolder(path)
-  var mp3 = file.substring(lastBar + 1)
-  folder.files.push(mp3)
-}
-Results.prototype.getFolderByNum = function (numStr) {
-  var index = numStr == +numStr ? +numStr - 1 : null
-  return index ? this.folders[this.keys[index]] : null
-}
+var config = require('./musica.json')
+var Archiver = require('./archiver.js')
 
 var userArgs = process.argv.slice(2)
-var config = require('./musica.json')
-new Archiver(config).search(userArgs.join(' '))
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+var archiver = new Archiver(config, rl)
+if (userArgs.length > 0) archiver.search(userArgs)
+else archiver.prompt()
