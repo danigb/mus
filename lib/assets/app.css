@@ -1,0 +1,15 @@
+
+body {
+  font: 300 14px/1.5 Lato,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  color: #777;
+}
+
+h1, h2, h3 {
+  line-height: 1.1;
+  color: #393939;
+}
+
+#app {
+  width: 960px;
+  margin: 40px auto;
+}

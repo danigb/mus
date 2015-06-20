@@ -1,4 +1,7 @@
 {
   "index": "../musica.txt",
-  "root": "/Volumes/DANI/Música/"
+  "root": "/Volumes/DANI/Música/",
+  "places": {
+    "A": "./SoulSeek/1506 Junio/"
+  }
 }
