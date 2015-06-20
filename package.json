@@ -13,6 +13,8 @@
   "author": "= <=>",
   "license": "MIT",
   "dependencies": {
+    "ejs": "^2.3.1",
+    "express": "^4.12.4",
     "prompt": "^0.2.14"
   }
 }
