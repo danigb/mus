@@ -1,13 +1,13 @@
 #! /usr/bin/env node
 var readline = require('readline')
 var config = require('./musica.json')
-var Archiver = require('./archiver.js')
+var Archiver = require('./lib/mus.js')
 
 var userArgs = process.argv.slice(2)
 var rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 })
-var archiver = new Archiver(config, rl)
-if (userArgs.length > 0) archiver.search(userArgs)
+var archiver = new Archiver(__dirname, config, rl)
+if (userArgs.length > 0) archiver.exec('search ' + userArgs.join(' '))
 else archiver.prompt()
