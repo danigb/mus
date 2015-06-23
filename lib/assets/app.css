@@ -13,3 +13,5 @@ h1, h2, h3 {
   width: 960px;
   margin: 40px auto;
 }
+
+.track .file { display: none; }

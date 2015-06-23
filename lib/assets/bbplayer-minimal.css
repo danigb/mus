@@ -1,5 +1,5 @@
 @charset 'UTF-8';
-/* 
+/*
 Optional styling for bbplayer elements.
 */
 @import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
@@ -16,8 +16,8 @@ Optional styling for bbplayer elements.
   height: 32px;
   width:  32px;
   border: 6px solid #CFCFCF;
-  border-radius: 50%; 
-  background: transparent; 
+  border-radius: 50%;
+  background: transparent;
   background-image: url('../images/play.png');
   background-repeat: no-repeat;
   background-position: 7px center;
@@ -72,7 +72,7 @@ Optional styling for bbplayer elements.
   display: inline-block;
   vertical-align: top;
   font-weight: bold;
-  width: 8em;
+  width: 20em;
   overflow: hidden;
   text-align: center;
 }
@@ -144,4 +144,3 @@ Optional styling for bbplayer elements.
   }
 
 }
-
